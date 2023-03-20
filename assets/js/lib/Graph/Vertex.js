@@ -5,8 +5,12 @@ class Vertex {
 
         this.neighbours = [];
 
-        this.x = -1;
-        this.y = -1;
+        this.x = x;
+        this.y = y;
+
+        this.fCost = -1;
+
+        this.parent = null;
 
         this.selected = false;
     }
@@ -37,8 +41,10 @@ class Vertex {
     }
 
     display(ctx, radius) {
-        if (!this.selected) ctx.fillStyle = "white";
-        else ctx.fillStyle = "green";
+        if (this.selected == 0) ctx.fillStyle = "white";
+        else if (this.selected == 1) ctx.fillStyle = "#67D446";
+        else if (this.selected == 2) ctx.fillStyle = "#F84738";
+        else if (this.selected == 3) ctx.fillStyle = "orange";
         ctx.beginPath();
         ctx.ellipse(this.x, this.y, radius, radius, 0, 0, 2 * Math.PI);
         ctx.stroke();

@@ -21,7 +21,7 @@ class Game extends GameBase { //A renommer ?
 
         this.graph = new Graph();
 
-        this.vertexRadius = 30;
+        this.vertexRadius = 25;
 
         /*---------Draw settings----------*/
         this.FPS = 15;
@@ -56,39 +56,69 @@ class Game extends GameBase { //A renommer ?
     }
 
     mouseAction(e, state) {
+        // console.log(e.which);
         let coord = MouseControl.getMousePos(this.canvas, e);
 
         // console.log(state + " : " + coord.x + " " + coord.y);
 
-        if (state == 0) {
-            this.vertexSource = this.selectVertex(coord.x, coord.y);
-            if (this.vertexSource) this.vertexSource.selected = true;
-        } else if (state == 1) {
-            this.vertexTarget = this.selectVertex(coord.x, coord.y);
-
-            if (!this.vertexSource && !this.vertexTarget) { //Drag and drop dans le vide
-                let id = Object.keys(this.graph.vertexes).length + 1;
-                this.graph.addLine(id);
-                this.graph.vertexes[id].setCoords(coord.x, coord.y);
-            } else if (this.vertexSource) {
-                if (this.vertexTarget) { //New edge
-                    this.graph.addLine(this.vertexSource.id, this.vertexTarget.id, this.dist(this.vertexSource.x, this.vertexSource.y, this.vertexTarget.x, this.vertexTarget.y), true);
-                } else if (!this.vertexTarget) { //Move source
-                    this.vertexSource.setCoords(coord.x, coord.y);
-
-                    this.vertexSource.refreshPonderation(); //refresh ponderation
-                    this.vertexSource.neighbours.forEach(edge => {
-                        edge.target.refreshPonderation();
-                    });
+        if (e.which == 1) {
+            if (state == 0) {
+                this.vertexSource = this.selectVertex(coord.x, coord.y);
+                if (this.vertexSource) this.vertexSource.selected = 1;
+                else {
+                    let id = Object.keys(this.graph.vertexes).length + 1;
+                    this.graph.addLine(id);
+                    this.graph.vertexes[id].setCoords(coord.x, coord.y);
+                    this.mouseCount = -1;
                 }
-                this.vertexSource.selected = false;
+            } else if (state == 1) {
+                this.vertexTarget = this.selectVertex(coord.x, coord.y);
+
+                if (this.vertexSource) {
+                    if (this.vertexTarget) { //New edge
+                        this.graph.addLine(this.vertexSource.id, this.vertexTarget.id, this.dist(this.vertexSource.x, this.vertexSource.y, this.vertexTarget.x, this.vertexTarget.y), true);
+                    } else if (!this.vertexTarget) { //Move source
+                        this.vertexSource.setCoords(coord.x, coord.y);
+
+                        this.vertexSource.refreshPonderation(); //refresh ponderation
+                        this.vertexSource.neighbours.forEach(edge => {
+                            edge.target.refreshPonderation();
+                        });
+                    }
+                    this.vertexSource.selected = 0;
+                }
+
+                this.vertexSource = null; //reset
+                this.vertexTarget = null;
+
+                // console.log("--------------------------");
+                // console.log(this.graph);
             }
+        } else if (e.which == 3) {
+            if (state == 0) {
+                console.log(1);
+                this.vertexSource = this.selectVertex(coord.x, coord.y);
+                if (!this.vertexSource) {
+                    this.mouseCount = 0;
+                } else {
+                    this.vertexSource.selected = 2;
+                }
+            } else if (state == 1) {
+                this.vertexTarget = this.selectVertex(coord.x, coord.y);
+                console.log(2);
+                console.log("Source");
+                console.log(this.vertexSource);
+                console.log("Target");
+                console.log(this.vertexTarget);
 
-            this.vertexSource = null; //reset
-            this.vertexTarget = null;
+                if (this.vertexSource && this.vertexTarget) {
+                    this.vertexSource.selected = 0;
+                    this.graph.calculatePath(this.vertexSource, this.vertexTarget);
+                }
 
-            console.log("--------------------------");
-            console.log(this.graph);
+                this.vertexSource = null; //reset
+                this.vertexTarget = null;
+            }
         }
     }
 
