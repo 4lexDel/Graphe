@@ -40,7 +40,7 @@ class Vertex {
         this.y = y;
     }
 
-    display(ctx, radius) {
+    display(ctx, radius, showId = true) {
         if (this.selected == 0) ctx.fillStyle = "white";
         else if (this.selected == 1) ctx.fillStyle = "#67D446";
         else if (this.selected == 2) ctx.fillStyle = "#F84738";
@@ -50,11 +50,13 @@ class Vertex {
         ctx.stroke();
         ctx.fill();
 
-        ctx.font = radius + "px serif";
-        ctx.fillStyle = "black";
-        ctx.textAlign = "center";
-        ctx.textBaseline = 'middle';
-        ctx.fillText(this.id, this.x, this.y);
+        if (showId) {
+            ctx.font = radius + "px serif";
+            ctx.fillStyle = "black";
+            ctx.textAlign = "center";
+            ctx.textBaseline = 'middle';
+            ctx.fillText(this.id, this.x, this.y);
+        }
     }
 
     displayEdge(ctx, radius) {

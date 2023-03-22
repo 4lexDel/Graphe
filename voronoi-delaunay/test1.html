@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/delaunator"></script>
+</head>
+
+<body>
+    <canvas id="canvas" width="800px" height="400px"></canvas>
+
+    <script>
+        // Génère un ensemble de points aléatoires
+        var points = []
+        for (var i = 0; i < 50; i++) {
+            points.push([Math.random() * canvas.width, Math.random() * canvas.height])
+        }
+
+        // Calcule la triangulation de Delaunay
+        var delaunay = Delaunator.from(points)
+
+        // Dessine les triangles
+        var ctx = canvas.getContext('2d')
+        ctx.strokeStyle = '#000'
+        ctx.beginPath()
+        for (var i = 0; i < delaunay.triangles.length; i += 3) {
+            var p1 = points[delaunay.triangles[i]]
+            var p2 = points[delaunay.triangles[i + 1]]
+            var p3 = points[delaunay.triangles[i + 2]]
+            ctx.moveTo(p1[0], p1[1])
+            ctx.lineTo(p2[0], p2[1])
+            ctx.lineTo(p3[0], p3[1])
+            ctx.closePath()
+        }
+        ctx.stroke()
+    </script>
+</body>
+
+</html>

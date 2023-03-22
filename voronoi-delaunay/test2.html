@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://d3js.org/d3-voronoi.v1.min.js"></script>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        // Créer un tableau de points à utiliser dans le diagramme de Voronoi
+        var points = [
+            [50, 100],
+            [150, 80],
+            [200, 200],
+            [100, 220],
+            [80, 50],
+            [250, 150]
+        ];
+
+        // Créer une fonction qui dessine le diagramme de Voronoi
+        function drawVoronoi(points) {
+            // Créer un objet voronoi à partir des points
+            var voronoi = d3.voronoi().extent([
+                [0, 0],
+                [300, 300]
+            ])(points);
+
+            // Dessiner les cellules du diagramme
+            var context = d3.select("canvas").node().getContext("2d");
+            context.clearRect(0, 0, 300, 300);
+            voronoi.cells.forEach(function(cell, i) {
+                context.beginPath();
+                context.moveTo(cell[0][0], cell[0][1]);
+                for (var j = 1, n = cell.length; j < n; ++j) {
+                    context.lineTo(cell[j][0], cell[j][1]);
+                }
+                context.closePath();
+                context.fillStyle = d3.rgb(Math.random() * 255, Math.random() * 255, Math.random() * 255);
+                context.fill();
+            });
+
+            // Dessiner les sites du diagramme
+            context.beginPath();
+            voronoi.vertices.forEach(function(vertex, i) {
+                context.moveTo(vertex[0] + 2.5, vertex[1]);
+                context.arc(vertex[0], vertex[1], 2.5, 0, 2 * Math.PI, false);
+            });
+            context.fillStyle = "#000000";
+            context.fill();
+        }
+
+        // Appeler la fonction pour dessiner le diagramme de Voronoi
+        drawVoronoi(points);
+    </script>
+</body>
+
+</html>

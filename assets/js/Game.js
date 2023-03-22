@@ -21,13 +21,15 @@ class Game extends GameBase { //A renommer ?
 
         this.graph = new Graph();
 
-        this.vertexRadius = 25;
+        this.vertexRadius = 10;
 
         /*---------Draw settings----------*/
         this.FPS = 15;
         this.prevTick = 0;
         this.draw();
         /*--------------------------------*/
+
+        this.generateGraph(); //Init map
     }
 
     initEvent() {
@@ -141,6 +143,70 @@ class Game extends GameBase { //A renommer ?
         return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
     }
 
+    generateGraph() {
+        let points = [];
+
+        // Utiliser la bibliothèque Voronoi.js pour construire le diagramme
+        for (let i = 0; i < 200; i++) {
+            const x = parseInt(this.getRandomInt(-0.5 * this.canvas.width, 1.5 * this.canvas.width));
+            const y = parseInt(this.getRandomInt(-0.5 * this.canvas.height, 1.5 * this.canvas.height));
+            points.push({ x, y });
+        }
+
+        const voronoi = new Voronoi();
+        const bbox = { xl: -0.5 * this.canvas.width, xr: 1.5 * this.canvas.width, yt: -0.5 * this.canvas.height, yb: 1.5 * this.canvas.height };
+        const diagram = voronoi.compute(points, bbox);
+
+        // Dessiner les cellules du diagramme
+        for (let cell of diagram.cells) { //Each cell !
+            let firstNode = { x: parseInt(cell.halfedges[0].getStartpoint().x), y: parseInt(cell.halfedges[0].getStartpoint().y) };
+            let firstNodeId = `${firstNode.x}-${firstNode.y}`;
+
+            this.graph.addLine(firstNodeId);
+
+            let firstVertex = this.graph.vertexes[firstNodeId];
+
+            if (firstVertex.x == -1 && firstVertex.y == -1) {
+                this.graph.vertexes[firstNodeId].setCoords(firstNode.x, firstNode.y);
+            }
+
+            for (let i = 0; i < cell.halfedges.length - 1; i++) {
+                const currentEdge = cell.halfedges[i];
+                const nextEdge = cell.halfedges[i + 1];
+
+                let currentNode = { x: parseInt(currentEdge.getEndpoint().x), y: parseInt(currentEdge.getEndpoint().y) };
+                let currentNodeId = `${currentNode.x}-${currentNode.y}`;
+
+                let nextNode = { x: parseInt(nextEdge.getEndpoint().x), y: parseInt(nextEdge.getEndpoint().y) };
+                let nextNodeId = `${nextNode.x}-${nextNode.y}`;
+
+                this.graph.addLine(currentNodeId, nextNodeId, this.dist(currentNode.x, currentNode.y, nextNode.x, nextNode.y), true);
+
+                let currentVertex = this.graph.vertexes[currentNodeId];
+
+                if (currentVertex.x == -1 && currentVertex.y == -1) {
+                    this.graph.vertexes[currentNodeId].setCoords(currentNode.x, currentNode.y);
+                }
+
+                let nextVertex = this.graph.vertexes[nextNodeId];
+
+                if (nextVertex.x == -1 && nextVertex.y == -1) {
+                    this.graph.vertexes[nextNodeId].setCoords(nextNode.x, nextNode.y);
+                }
+            }
+
+            const lastEdge = cell.halfedges[cell.halfedges.length - 1];
+            let lastNode = { x: parseInt(lastEdge.getEndpoint().x), y: parseInt(lastEdge.getEndpoint().y) };
+            let lastNodeId = `${lastNode.x}-${lastNode.y}`;
+
+            this.graph.addLine(firstNodeId, lastNodeId, this.dist(firstNode.x, firstNode.y, lastNode.x, lastNode.y), true);
+        }
+    }
+
+    getRandomInt(min, max) {
+        return min + Math.random() * (max - min);
+    }
+
     draw() {
         /*------------------------------FPS-----------------------------*/
         window.requestAnimationFrame(() => this.draw());
@@ -173,7 +239,7 @@ class Game extends GameBase { //A renommer ?
 
     displayVertexes() {
         for (let idVertex in this.graph.vertexes) {
-            this.graph.vertexes[idVertex].display(this.ctx, this.vertexRadius);
+            this.graph.vertexes[idVertex].display(this.ctx, this.vertexRadius, false);
         }
     }
 }
