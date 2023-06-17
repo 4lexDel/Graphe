@@ -21,9 +21,10 @@ class Game extends GameBase { //A renommer ?
 
         //his.graph = new Graph();
         let map = new Map(this.canvas.width, this.canvas.height);
+        //this.graph = new Graph();
         this.graph = map.generate();
 
-        this.vertexRadius = 10;
+        this.vertexRadius = 4;
 
         /*---------Draw settings----------*/
         this.FPS = 15;

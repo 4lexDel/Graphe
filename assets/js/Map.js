@@ -11,7 +11,7 @@ class Map {
     }
 
     generate() {
-        //this.generateAreas();
+        this.generateAreas();
 
         this.generateGraph();
 
@@ -26,27 +26,27 @@ class Map {
         while (attempt >= 0) {
             let rx = parseInt(this.getRandomNumber(-0.5 * this.width, 1.5 * this.width));
             let ry = parseInt(this.getRandomNumber(-0.5 * this.height, 1.5 * this.height));
-            let newCity = new Area(rx, ry, Area.CITY, 50, 0.005, 100);
+            let newCity = new Area(rx, ry, Area.CITY, 180, 0.0007, 120);
             if (this.isNewAreaAllowed(newCity)) this.areas.push(newCity);
             else attempt--;
         }
 
-        // attempt = initAttempt;
-        // while (attempt >= 0) {
-        //     let rx = parseInt(this.getRandomNumber(-0.5 * this.width, 1.5 * this.width));
-        //     let ry = parseInt(this.getRandomNumber(-0.5 * this.height, 1.5 * this.height));
-        //     let newTown = new Area(rx, ry, Area.TOWN, 30, 0.0009, 80);
-        //     if (this.isNewAreaAllowed(newTown)) this.areas.push(newTown);
-        //     else attempt--;
-        // }
-        // attempt = initAttempt;
-        // while (attempt >= 0) {
-        //     let rx = parseInt(this.getRandomNumber(-0.5 * this.width, 1.5 * this.width));
-        //     let ry = parseInt(this.getRandomNumber(-0.5 * this.height, 1.5 * this.height));
-        //     let newHamlet = new Area(rx, ry, Area.HAMLET, 10, 0.005, 50);
-        //     if (this.isNewAreaAllowed(newHamlet)) this.areas.push(newHamlet);
-        //     else attempt--;
-        // }
+        attempt = initAttempt;
+        while (attempt >= 0) {
+            let rx = parseInt(this.getRandomNumber(-0.5 * this.width, 1.5 * this.width));
+            let ry = parseInt(this.getRandomNumber(-0.5 * this.height, 1.5 * this.height));
+            let newTown = new Area(rx, ry, Area.TOWN, 60, 0.0009, 80);
+            if (this.isNewAreaAllowed(newTown)) this.areas.push(newTown);
+            else attempt--;
+        }
+        attempt = initAttempt;
+        while (attempt >= 0) {
+            let rx = parseInt(this.getRandomNumber(-0.5 * this.width, 1.5 * this.width));
+            let ry = parseInt(this.getRandomNumber(-0.5 * this.height, 1.5 * this.height));
+            let newHamlet = new Area(rx, ry, Area.HAMLET, 10, 0.0008, 50);
+            if (this.isNewAreaAllowed(newHamlet)) this.areas.push(newHamlet);
+            else attempt--;
+        }
     }
 
     isNewAreaAllowed(newArea) {
@@ -67,26 +67,26 @@ class Map {
     generateGraph() {
         let points = [];
 
-        // this.areas.forEach(area => {
-        //     for (let i = 0; i < area.nbPointMax; i++) {
-        //         let r = parseInt(this.getRandomNumber(0, area.radius));
-        //         let alpha = this.getRandomNumber(0, 2 * Math.PI);
-        //         let x = parseInt(area.x + r * Math.cos(alpha));
-        //         let y = parseInt(area.y + r * Math.sin(alpha));
-        //         points.push({ x, y });
-        //     }
-        // });
+        this.areas.forEach(area => {
+            for (let i = 0; i < area.nbPointMax; i++) {
+                let r = parseInt(this.getRandomNumber(0, area.radius));
+                let alpha = this.getRandomNumber(0, 2 * Math.PI);
+                let x = parseInt(area.x + r * Math.cos(alpha));
+                let y = parseInt(area.y + r * Math.sin(alpha));
+                points.push({ x, y });
+            }
+        });
 
-        for (let i = 0; i < 200; i++) {
-            const x = parseInt(this.getRandomNumber(-0.5 * this.width, 1.5 * this.width));
-            const y = parseInt(this.getRandomNumber(-0.5 * this.height, 1.5 * this.height));
-            points.push({ x, y });
-        }
+        // for (let i = 0; i < 200; i++) {
+        //     const x = parseInt(this.getRandomNumber(-0.5 * this.width, 1.5 * this.width));
+        //     const y = parseInt(this.getRandomNumber(-0.5 * this.height, 1.5 * this.height));
+        //     points.push({ x, y });
+        // }
 
         // console.log(points);
 
         const voronoi = new Voronoi();
-        const bbox = { xl: -0.5 * this.width, xr: 1.5 * this.width, yt: -0.5 * this.height, yb: 1.5 * this.height };
+        const bbox = { xl: -1.5 * this.width, xr: 2.5 * this.width, yt: -1.5 * this.height, yb: 2.5 * this.height };
         const diagram = voronoi.compute(points, bbox);
 
         // Dessiner les cellules du diagramme

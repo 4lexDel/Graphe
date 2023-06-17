@@ -2,7 +2,6 @@
 
 ## feature
 
-- algo : pathfinding
 - ergonomie : edge with the drag and drop ?
 - générer la matrice d'adjacence
 - graph : reset all selected state
@@ -14,3 +13,7 @@
 
 - ergonomie de selection : context menu ?
 - bug pathfinding click + click classique
+
+- generation : espacer les points -> remove density
+
+- ponderation : vitesse vs distance + penalité sur node
